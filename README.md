@@ -4,7 +4,7 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://www.hacs.xyz/docs/faq/custom_repositories/)
 [![Tests](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/release.yml)
 [![HACS Validation](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/hacs.yml/badge.svg?branch=main)](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/hacs.yml)
-[![Original license: MIT](https://img.shields.io/badge/Original_license-MIT-green.svg)](docs/LICENSE-rss-news-card.txt)
+[![License](https://img.shields.io/github/license/Willyanlz/rss-labswill-ha)](LICENSE)
 
 **Notícias no seu painel. Leitura no seu ritmo.**
 
@@ -165,8 +165,8 @@ por **[suxlala](https://github.com/suxlala)**, distribuído sob licença MIT.
 O [aviso original de licença](docs/LICENSE-rss-news-card.txt) também acompanha o bundle.
 Esta personalização partiu da versão 1.5.2, preservando partes do editor e traduções.
 O gerador QR incorporado é **qrcode-generator 1.4.4**, de Kazuhiko Arase, sob MIT;
-seu aviso original permanece no bundle. O editor e as traduções foram preservados
-da base existente; não se atribui aqui uma nova licença a código de terceiros.
+seu aviso original permanece no bundle. A personalização mantém a
+[licença MIT](LICENSE), com os créditos e avisos dos autores originais preservados.
 
 Os testes de Chromium exercitam o card com estados HA simulados, tempo controlado,
 interações e ciclo de vida. Uma instalação real do HACS, o aplicativo iOS e os
