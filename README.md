@@ -6,6 +6,10 @@ Carrossel RSS para Home Assistant, pensado para tablets e painéis de automaçã
 controles confortáveis ao toque, notícias alternadas entre fontes, leitor integrado
 e QR Code para continuar no celular.
 
+Esta é uma personalização do **[RSS News Card for Home Assistant](https://github.com/suxlala/rss-news-card)**,
+criado por **[suxlala](https://github.com/suxlala)**. Os créditos pelo projeto original
+são de seu autor; a LabsWill mantém as adaptações do carrossel, controles e leitor.
+
 ![Prévia do card](docs/preview.png)
 
 [Instalar pelo HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=Willyanlz&repository=rss-labswill-ha&category=plugin)
@@ -44,9 +48,12 @@ Se você já tem sensores com o atributo `articles`, pode continuar usando-os.
 Em uma instalação nova:
 
 1. Copie [scripts/fetch-rss.py](scripts/fetch-rss.py) para `/config/scripts/fetch-rss.py`.
-2. Mescle [examples/sensors.yaml](examples/sensors.yaml) no `configuration.yaml`.
-3. Verifique a configuração e reinicie o Home Assistant.
-4. Confirme os IDs reais dos sensores nas Ferramentas de desenvolvedor. Os IDs
+2. Cadastre seus feeds em `FEEDS` no leitor ou em `/config/rss-feeds.json`, conforme
+   o exemplo abaixo. O leitor é distribuído sem fontes predefinidas, com instruções PT-BR/EN.
+3. Mescle [examples/sensors.yaml](examples/sensors.yaml) no `configuration.yaml`,
+   usando o mesmo identificador de feed que você cadastrou.
+4. Verifique a configuração e reinicie o Home Assistant.
+5. Confirme os IDs reais dos sensores nas Ferramentas de desenvolvedor. Os IDs
    podem ter sufixos se entidades com esses nomes já existirem.
 
 O leitor usa somente a biblioteca padrão do Python 3, disponível no HAOS.
@@ -54,12 +61,14 @@ Para configurar outras fontes sem editar o leitor, crie `/config/rss-feeds.json`
 
 ```json
 {
-  "minha_fonte": "https://exemplo.com/feed.xml"
+  "minha_fonte": "https://exemplo.com/feed.xml",
+  "outra_fonte": "https://example.com/rss.xml"
 }
 ```
 
-Use `python3 /config/scripts/fetch-rss.py minha_fonte` no sensor. O leitor suporta
-RSS XML com itens `item`, não Atom; retorna até 20 notícias por fonte. A atualidade
+Use `python3 /config/scripts/fetch-rss.py minha_fonte` no sensor. Substitua os
+endereços ilustrativos acima pelos feeds desejados. O leitor suporta RSS XML
+com itens `item`, não Atom; retorna até 20 notícias por fonte. A atualidade
 das notícias depende do feed. Os portais podem mudar URLs ou bloquear requisições.
 
 ## Seu primeiro card
@@ -77,10 +86,10 @@ show_source: true
 show_date: true
 image_fit: contain
 sources:
-  - entity: sensor.noticias_g1_araraquara
-    name: G1 Região
-  - entity: sensor.noticias_g1_mundo
-    name: G1 Mundo
+  - entity: sensor.noticias_minha_fonte
+    name: Minha Fonte
+  - entity: sensor.noticias_outra_fonte
+    name: Outra Fonte
 ```
 
 O card ordena as notícias dentro de cada fonte, alterna as fontes e remove links
@@ -167,8 +176,8 @@ gere o bundle, rode os testes, faça commit e envie uma tag correspondente:
 
 ```sh
 git push origin main
-git tag v2.1.1
-git push origin v2.1.1
+git tag v2.1.2
+git push origin v2.1.2
 ```
 
 O workflow só publica se os testes passarem e a tag coincidir com `package.json`.
@@ -176,7 +185,10 @@ Mantenha o repositório público e GitHub Actions habilitado.
 
 ## Créditos e limites de validação
 
-Evolução da personalização RSS News Card utilizada na central LabsWill.
+Projeto original: **[RSS News Card for Home Assistant](https://github.com/suxlala/rss-news-card)**,
+por **[suxlala](https://github.com/suxlala)**, distribuído sob licença MIT.
+O [aviso original de licença](docs/LICENSE-rss-news-card.txt) também acompanha o bundle.
+Esta personalização partiu da versão 1.5.2, preservando partes do editor e traduções.
 O gerador QR incorporado é **qrcode-generator 1.4.4**, de Kazuhiko Arase, sob MIT;
 seu aviso original permanece no bundle. O editor e as traduções foram preservados
 da base existente; não se atribui aqui uma nova licença a código de terceiros.

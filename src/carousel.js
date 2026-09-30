@@ -120,7 +120,6 @@ class RssNewsCard extends HTMLElement {
         .navigation button:focus-visible{outline:3px solid var(--primary-color);outline-offset:3px}
         .navigation .pause{background:var(--primary-color);color:var(--text-primary-color,#fff);border-color:transparent}
         .navigation svg{width:22px;height:22px;fill:currentColor;pointer-events:none}
-        .playback-status{text-align:center;font-size:11px;color:var(--secondary-text-color);margin-top:8px;min-height:16px}
         @media(max-width:360px){.navigation{gap:6px}}
         .counter{min-width:64px;text-align:center;font-variant-numeric:tabular-nums;color:var(--secondary-text-color);white-space:nowrap}
         .headline{text-align:left;border-radius:0;padding:0;cursor:pointer}
@@ -145,7 +144,7 @@ class RssNewsCard extends HTMLElement {
         .empty{padding:30px 0;color:var(--secondary-text-color);text-align:center}
         @media(prefers-reduced-motion:reduce){.track{transition:none}}
       </style>
-      <ha-card><h2 hidden></h2><div class="viewport" tabindex="0" role="region" aria-label="Notícias em carrossel"><div class="track"></div></div><div class="navigation"><button class="previous" title="Notícia anterior" aria-label="Notícia anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 5.3-1.4-1.4L5.2 12l8.1 8.1 1.4-1.4L8 12z"/></svg></button><span class="counter" aria-label="Posição da notícia"></span><button class="next" title="Próxima notícia" aria-label="Próxima notícia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.3 5.3 1.4-1.4 8.1 8.1-8.1 8.1-1.4-1.4L16 12z"/></svg></button><button class="pause" aria-label="Pausar notícias">Ⅱ</button></div><div class="playback-status" role="status" aria-live="polite"></div></ha-card>`;
+      <ha-card><h2 hidden></h2><div class="viewport" tabindex="0" role="region" aria-label="Notícias em carrossel"><div class="track"></div></div><div class="navigation"><button class="previous" title="Notícia anterior" aria-label="Notícia anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 5.3-1.4-1.4L5.2 12l8.1 8.1 1.4-1.4L8 12z"/></svg></button><span class="counter" aria-label="Posição da notícia"></span><button class="next" title="Próxima notícia" aria-label="Próxima notícia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.3 5.3 1.4-1.4 8.1 8.1-8.1 8.1-1.4-1.4L16 12z"/></svg></button><button class="pause" aria-label="Pausar notícias">Ⅱ</button></div></ha-card>`;
     const root = this.shadowRoot;
     const title = root.querySelector('h2');
     title.textContent = this._config.title || ''; title.hidden = !this._config.title;
@@ -236,10 +235,7 @@ class RssNewsCard extends HTMLElement {
     pause.setAttribute('aria-label', label);
     pause.title = label;
     pause.setAttribute('aria-pressed', String(this._paused));
-    const status = this.shadowRoot.querySelector('.playback-status');
-    status.hidden = this._articles.length < 2;
-    status.textContent = this._paused ? (this._resumeAt ? `Pausado • retoma após ${this._config.pause_timeout}s sem interação` : 'Pausado • toque em play para retomar')
-      : Date.now() < this._idleUntil ? `Retoma após ${this._config.interaction_timeout}s sem interação` : 'Reprodução automática';
+
   }
   _interact() {
     this._idleUntil = Date.now() + this._config.interaction_timeout * 1000;

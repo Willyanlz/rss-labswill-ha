@@ -1,5 +1,7 @@
 /**
  * RSS News Card for Home Assistant
+ * Original project by suxlala: https://github.com/suxlala/rss-news-card
+ * LabsWill customization; original editor and localizations retained.
  * v1.5.2 - HACS-compatible, auto language detection, visual editor,
  *           configurable colors/fonts, visited article tracking
  */

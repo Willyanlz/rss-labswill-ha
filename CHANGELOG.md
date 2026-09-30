@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.1 — 2026-09-30
+
+- Removido o texto de status abaixo dos controles; mantidos os rótulos acessíveis do botão play/pause.
+- Créditos ao autor original suxlala e link para RSS News Card no README exibido pelo HACS.
+- Leitor distribuído sem feeds predefinidos, com instruções em português e inglês.
+- Exemplos de configuração genéricos para cada instalação cadastrar suas próprias fontes.
+
 ## 2.1.0 — 2026-09-30
 
 - Controles de 44 px com ícones vetoriais, foco visível e feedback de reprodução.

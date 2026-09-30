@@ -11,11 +11,16 @@ from urllib.parse import urljoin, urlparse
 import xml.etree.ElementTree as ET
 
 FEEDS = {
-    # Feeds Regionais e Gerais
-    'g1_araraquara': 'https://g1.globo.com/rss/g1/sp/sao-carlos-regiao/',
-    'g1_mundo': 'https://g1.globo.com/rss/g1/mundo/',
-
-    # Fontes adicionais podem ser definidas em /config/rss-feeds.json.
+    # PT-BR: Adicione seus feeds RSS no formato 'identificador': 'URL_DO_FEED'.
+    # Exemplo (remova o # e substitua pela URL real):
+    # 'minha_fonte': 'https://exemplo.com/feed.xml',
+    # Use o mesmo identificador no sensor: python3 /config/scripts/fetch-rss.py minha_fonte
+    # Alternativa: configure um objeto JSON em /config/rss-feeds.json com essas mesmas chaves e URLs.
+    # EN: Add your RSS feeds as 'identifier': 'FEED_URL'.
+    # Example (uncomment and replace with the real feed URL):
+    # 'my_feed': 'https://example.com/feed.xml',
+    # Use the same identifier in your sensor: python3 /config/scripts/fetch-rss.py my_feed
+    # Alternatively, define a JSON object in /config/rss-feeds.json using the same keys and URLs.
 }
 
 def fetch(url):

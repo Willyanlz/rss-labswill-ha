@@ -57,7 +57,7 @@ class RssNewsCardEditor extends HTMLElement {
         input:checked + .rss-slider{background:var(--primary-color);}
         input:checked + .rss-slider:before{transform:translateX(16px);}
       </style>
-      <div class="rss-ed"><small style="color:var(--secondary-text-color)">LabsWill Carousel • 2.1.0</small>
+      <div class="rss-ed"><small style="color:var(--secondary-text-color)">LabsWill Carousel • 2.1.1</small>
         <label>${t.ed.card_title}</label>
         <input type="text" id="ed-title" value="${c.title || ''}"/>
 
@@ -333,6 +333,6 @@ window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'rss-news-card',
   name: 'RSS News Card',
-  description: 'LabsWill Carousel 2.1.0 • RSS com dimensoes configuraveis.',
+  description: 'LabsWill Carousel 2.1.1 • RSS com dimensoes configuraveis.',
   preview: true,
 });

@@ -10,7 +10,7 @@ show_source: true
 show_date: true
 image_fit: contain
 sources:
-  - entity: sensor.noticias_g1_araraquara
-    name: G1 Região
-  - entity: sensor.noticias_g1_mundo
-    name: G1 Mundo
+  - entity: sensor.noticias_minha_fonte
+    name: Minha Fonte
+  - entity: sensor.noticias_outra_fonte
+    name: Outra Fonte
