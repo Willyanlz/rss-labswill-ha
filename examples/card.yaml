@@ -1,0 +1,16 @@
+type: custom:rss-news-card
+title: Notícias
+autoplay: true
+slide_interval: 8
+interaction_timeout: 20
+pause_timeout: 60
+max_articles: 20
+show_description: false
+show_source: true
+show_date: true
+image_fit: contain
+sources:
+  - entity: sensor.noticias_g1_araraquara
+    name: G1 Região
+  - entity: sensor.noticias_g1_mundo
+    name: G1 Mundo

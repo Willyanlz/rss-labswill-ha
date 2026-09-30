@@ -1,0 +1,20 @@
+# Mescle em configuration.yaml. Não crie duas chaves command_line no mesmo arquivo.
+command_line:
+  - sensor:
+      name: Noticias G1 Araraquara
+      unique_id: labswill_rss_g1_araraquara
+      command: python3 /config/scripts/fetch-rss.py g1_araraquara
+      command_timeout: 90
+      scan_interval: 600
+      value_template: "{{ value_json.articles | length }}"
+      json_attributes:
+        - articles
+  - sensor:
+      name: Noticias G1 Mundo
+      unique_id: labswill_rss_g1_mundo
+      command: python3 /config/scripts/fetch-rss.py g1_mundo
+      command_timeout: 90
+      scan_interval: 600
+      value_template: "{{ value_json.articles | length }}"
+      json_attributes:
+        - articles

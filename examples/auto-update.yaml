@@ -1,0 +1,14 @@
+# Cole como uma automação em modo YAML e substitua o entity_id pelo real.
+alias: RSS LabsWill - atualizar de madrugada
+triggers:
+  - trigger: time
+    at: '04:00:00'
+conditions:
+  - condition: state
+    entity_id: update.SUBSTITUA_PELA_ENTIDADE_DO_RSS
+    state: 'on'
+actions:
+  - action: update.install
+    target:
+      entity_id: update.SUBSTITUA_PELA_ENTIDADE_DO_RSS
+mode: single

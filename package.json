@@ -1,0 +1,12 @@
+{
+  "name": "rss-labswill-ha",
+  "version": "2.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "playwright test",
+    "check": "node --check rss-labswill-ha.js"
+  },
+  "devDependencies": { "@playwright/test": "1.56.0" }
+}
