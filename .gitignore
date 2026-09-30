@@ -3,3 +3,6 @@ test-results/
 playwright-report/
 __pycache__/
 *.pyc
+
+# Rascunhos de divulgação: ficam só na máquina local
+docs/announcement-reddit.md
