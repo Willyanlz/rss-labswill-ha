@@ -171,7 +171,7 @@ Atualize pelo HACS e recarregue o painel.
 > [!TIP]
 > Se o visual antigo continuar aparecendo após atualizar, recarregue completamente o navegador ou o FreeKiosk.
 
-[Manutenção e desenvolvimento](docs/MAINTENANCE.md) · [Changelog](CHANGELOG.md)
+· [Changelog](CHANGELOG.md)
 
 ## Créditos e limites de validação
 
