@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2 — 2026-09-30
+
+- Pausa enquanto o mouse permanece sobre o card ou existe foco por teclado/mouse, inclusive após atualização dos sensores.
+- Retomada após retirar mouse e foco; toques no tablet continuam retomando por inatividade.
+- Dicas de configuração, leitura e atualização em blocos `[!TIP]` no README.
+
 ## 2.1.1 — 2026-09-30
 
 - Removido o texto de status abaixo dos controles; mantidos os rótulos acessíveis do botão play/pause.

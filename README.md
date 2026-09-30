@@ -90,6 +90,10 @@ O sensor consulta a fonte a cada 600 segundos. Se o portal demorar e ocorrer tim
 aumente `command_timeout` para 90. O leitor suporta RSS XML, com até 20 itens por fonte.
 [Documentação do sensor command_line](https://www.home-assistant.io/integrations/command_line/).
 
+> [!TIP]
+> Se nenhuma notícia aparecer, confira o atributo `articles` do sensor e o `entity_id` usado no card.
+> O identificador no comando Python também precisa corresponder à chave cadastrada em `FEEDS` ou `rss-feeds.json`.
+
 ## Seu primeiro card
 
 ```yaml
@@ -117,7 +121,8 @@ repetidos. Se uma fonte tiver poucos itens, as outras preenchem as vagas.
 | Ação | Comportamento |
 | --- | --- |
 | Sem interação | Avança a cada `slide_interval` segundos e volta ao primeiro item no fim. |
-| Setas, swipe, teclado, movimento do mouse ou foco | Aguarda `interaction_timeout` sem interação e volta a avançar. Foco ou mouse parado não travam a reprodução. |
+| Mouse sobre o card, mesmo parado, ou foco por teclado/mouse | Pausa enquanto estiver sobre o card ou com foco nele. Após retirar o mouse e o foco, aguarda `interaction_timeout` e retoma. |
+| Toque e swipe | Aguarda `interaction_timeout` sem interação e retoma; o foco deixado pelo toque não mantém o tablet pausado. |
 | Pausa | Retoma após `pause_timeout` sem interação, seguido de um intervalo completo de leitura. |
 | Play | Retoma com um intervalo completo antes da próxima notícia. |
 | Matéria aberta | Suspende a troca até fechar o leitor; depois aplica a espera de interação. |
@@ -126,6 +131,13 @@ repetidos. Se uma fonte tiver poucos itens, as outras preenchem as vagas.
 
 `pause_timeout: 0` deixa a pausa permanente até apertar play. `autoplay: false`
 inicia pausado; play ainda funciona e a próxima pausa será permanente.
+
+> [!TIP]
+> Para ler com calma no computador, deixe o mouse sobre o card ou navegue até ele com Tab.
+> Para retomar, retire o mouse e mova o foco para fora do card. No tablet, a rotação volta após a espera de interação.
+
+> [!TIP]
+> Quer manter a pausa até apertar play? Configure `pause_timeout: 0`.
 
 O leitor tenta mostrar o site em iframe. Quando o portal bloqueia a incorporação,
 use **Não abriu? Ler no celular**. Após 15 segundos sem carregamento, o QR aparece.
@@ -155,6 +167,9 @@ as políticas de cookies ou incorporação dos portais.
 ## Atualização
 
 Atualize pelo HACS e recarregue o painel.
+
+> [!TIP]
+> Se o visual antigo continuar aparecendo após atualizar, recarregue completamente o navegador ou o FreeKiosk.
 
 [Manutenção e desenvolvimento](docs/MAINTENANCE.md) · [Changelog](CHANGELOG.md)
 

@@ -2,12 +2,33 @@ class RssNewsCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({mode: 'open'});
+    this.shadowRoot.addEventListener('focusin', () => {
+      if (this._config && !this._movingFocus) this._interact();
+    });
+    this.shadowRoot.addEventListener('focusout', () => queueMicrotask(() => {
+      if (this.isConnected && this._config && !this.shadowRoot.activeElement) this._interact();
+    }));
     this._articles = [];
     this._index = 0;
     this._visible = true;
     this._paused = false;
     this._resumeAt = 0;
+    this.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'mouse') { this._hover = true; this._schedule(); }
+    });
+    this.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'mouse') { this._hover = false; if (this._config) this._interact(); }
+    });
+    this.addEventListener('pointerdown', event => { this._touchFocus = event.pointerType === 'touch'; }, {capture:true});
+    this.addEventListener('keydown', () => { this._touchFocus = false; this._schedule(); }, {capture:true});
     this._visibility = () => this._schedule(true);
+    // DOM replacement can suppress pointerleave; observe the next real mouse move too.
+    this._pointerOutside = event => {
+      if (event.pointerType === 'mouse' && this._hover && !event.composedPath().includes(this)) {
+        this._hover = false;
+        if (this._config) this._interact();
+      }
+    };
     // Swipe Navigation listens on ancestor elements: keep card gestures local.
     for (const name of ['touchstart','touchmove','touchend','touchcancel','pointerdown','pointermove','pointerup','pointercancel','mousedown','mousemove','mouseup']) {
       this.addEventListener(name, event => event.stopPropagation(), {passive:true});
@@ -33,6 +54,7 @@ class RssNewsCard extends HTMLElement {
     return value == null || !Number.isFinite(number) ? fallback : Math.min(86400, Math.max(minimum, number));
   }
   connectedCallback() {
+    document.addEventListener('pointermove', this._pointerOutside, {capture:true, passive:true});
     document.addEventListener('visibilitychange', this._visibility);
     this._observer = new IntersectionObserver(entries => {
       this._visible = entries[0].isIntersecting;
@@ -42,6 +64,8 @@ class RssNewsCard extends HTMLElement {
     this._schedule();
   }
   disconnectedCallback() {
+    document.removeEventListener('pointermove', this._pointerOutside, true);
+    this._hover = false;
     
     this._dialog?.close();
     this._dialog?.remove();
@@ -95,6 +119,9 @@ class RssNewsCard extends HTMLElement {
   }
   _render() {
     if (!this._config) return;
+    const focused = this.shadowRoot.activeElement;
+    const focusClass = focused?.classList[0];
+    const focusInArticle = !!focused?.closest('article');
     this.shadowRoot.innerHTML = `
       <style>
         :host{display:block;min-width:0}
@@ -222,7 +249,10 @@ class RssNewsCard extends HTMLElement {
     card.onpointermove = () => this._interact();
     card.onpointerdown = () => this._interact();
     card.onkeydown = () => this._interact();
-    root.onfocusin = () => { if (!this._movingFocus) this._interact(); };
+    if (focusClass) {
+      const scope = focusInArticle ? root.querySelectorAll('article')[this._index] : root;
+      scope?.querySelector(`.${CSS.escape(focusClass)}`)?.focus({preventScroll:true});
+    }
     this._sync(); this._schedule();
   }
   _sync() {
@@ -266,7 +296,8 @@ class RssNewsCard extends HTMLElement {
       this._idleUntil = 0;
     }
     if (this.shadowRoot.querySelector('.track')) this._sync();
-    if (!this.isConnected || !this._visible || document.hidden || this._dialog?.open || this._touch || this._articles.length < 2) {
+    const focused = !!this.shadowRoot.activeElement && !this._touchFocus;
+    if (!this.isConnected || !this._visible || document.hidden || this._dialog?.open || this._touch || this._hover || focused || this._articles.length < 2) {
       this._nextAt = 0;
       return;
     }

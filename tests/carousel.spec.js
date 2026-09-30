@@ -15,6 +15,10 @@ async function mount(page, config = {}) {
   await expect(page.locator('.counter')).toHaveText('1 / 3');
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
+async function leave(page) {
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => card.shadowRoot.activeElement?.blur());
+}
 const advance = (page, ms) => page.clock.runFor(ms);
 const index = page => page.evaluate(() => card._index);
 
@@ -32,29 +36,34 @@ test('autoplay wraps, and repeated HA data/observer callbacks do not starve time
   await advance(page, 3000);
   expect(await index(page)).toBe(1);
 });
-test('next and previous resume despite retained button focus and hover', async ({page}) => {
+test('navigation remains paused with mouse and focus, then resumes after both leave', async ({page}) => {
   await mount(page);
   await page.locator('.next').click();
   expect(await index(page)).toBe(1);
-  await advance(page, 4900);
+  await advance(page, 30000);
   expect(await index(page)).toBe(1);
-  await advance(page, 200);
+  await page.mouse.move(0, 0);
+  await advance(page, 10000);
+  expect(await index(page)).toBe(1);
+  await leave(page);
+  await advance(page, 5100);
   expect(await index(page)).toBe(2);
   await page.locator('.previous').click();
   expect(await index(page)).toBe(1);
+  await leave(page);
   await advance(page, 5100);
   expect(await index(page)).toBe(2);
 });
 test('pause resumes after inactivity, play resumes immediately with a full interval', async ({page}) => {
   await mount(page);
-  await page.locator('.pause').click();
+  await page.locator('.pause').dispatchEvent('click');
   await advance(page, 6100);
   await expect(page.locator('.pause')).toHaveAttribute('aria-pressed', 'false');
   expect(await index(page)).toBe(0);
   await advance(page, 3000);
   expect(await index(page)).toBe(1);
-  await page.locator('.pause').click();
-  await page.locator('.pause').click();
+  await page.locator('.pause').dispatchEvent('click');
+  await page.locator('.pause').dispatchEvent('click');
   await advance(page, 3100);
   expect(await index(page)).toBe(2);
 });
@@ -62,10 +71,10 @@ test('permanent pause and disabled initial autoplay both allow manual play', asy
   await mount(page, {pause_timeout: 0, autoplay: false});
   await advance(page, 120000);
   expect(await index(page)).toBe(0);
-  await page.locator('.pause').click();
+  await page.locator('.pause').dispatchEvent('click');
   await advance(page, 3100);
   expect(await index(page)).toBe(1);
-  await page.locator('.pause').click();
+  await page.locator('.pause').dispatchEvent('click');
   await advance(page, 120000);
   expect(await index(page)).toBe(1);
 });
@@ -78,6 +87,7 @@ test('modal freezes article, applies updated feed on close and resumes with focu
   await page.evaluate(() => {card._hass.states['sensor.news'].attributes.articles[0].title = 'Atualizada';card.hass = card._hass;});
   await page.locator('.modal-close').click();
   await expect(page.locator('article').first().locator('.headline')).toHaveText('Atualizada');
+  await leave(page);
   await advance(page, 5100);
   expect(await index(page)).toBe(1);
 });
@@ -133,6 +143,9 @@ test('keyboard navigation and mobile controls remain accessible', async ({page})
   await page.locator('.viewport').focus();
   await page.keyboard.press('ArrowRight');
   expect(await index(page)).toBe(1);
+  await advance(page, 10000);
+  expect(await index(page)).toBe(1);
+  await leave(page);
   await advance(page, 5100);
   expect(await index(page)).toBe(2);
   const size = await page.locator('.pause').boundingBox();
@@ -163,14 +176,38 @@ test('continuous activity delays resumption until the last interaction', async (
   expect(await index(page)).toBe(1);
 });
 
-test('focus on slide moves safely without adding another idle delay', async ({page}) => {
+test('stationary hover survives sensor refresh and resumes on leave', async ({page}) => {
   await mount(page);
-  await page.locator('article').first().locator('.headline').focus();
+  await page.locator('ha-card').hover();
+  await page.evaluate(() => {card._hass.states['sensor.news'].attributes.articles[0].title='Changed';card.hass=card._hass;});
+  await advance(page, 30000);
+  expect(await index(page)).toBe(0);
+  await leave(page);
   await advance(page, 5100);
   expect(await index(page)).toBe(1);
-  await expect(page.locator('.viewport')).toBeFocused();
-  await advance(page, 3000);
+});
+
+test('keyboard focus survives sensor refresh and resumes after blur', async ({page}) => {
+  await mount(page);
+  await page.locator('article').first().locator('.headline').focus();
+  await page.evaluate(() => {card._hass.states['sensor.news'].attributes.articles[0].title='Changed';card.hass=card._hass;});
+  await advance(page, 30000);
+  expect(await index(page)).toBe(0);
+  await expect(page.locator('article').first().locator('.headline')).toBeFocused();
+  await leave(page);
+  await advance(page, 5100);
+  expect(await index(page)).toBe(1);
+});
+
+test('touch button focus does not permanently pause tablet playback', async ({browser}) => {
+  const context = await browser.newContext({hasTouch:true});
+  const page = await context.newPage();
+  await mount(page);
+  await page.locator('.next').tap();
+  expect(await index(page)).toBe(1);
+  await advance(page, 5100);
   expect(await index(page)).toBe(2);
+  await context.close();
 });
 
 test('reader timeout offers QR and disconnect clears reader timer', async ({page}) => {
