@@ -1,5 +1,11 @@
 # RSS LabsWill HA
 
+[![GitHub Release](https://img.shields.io/github/v/release/Willyanlz/rss-labswill-ha)](https://github.com/Willyanlz/rss-labswill-ha/releases)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://www.hacs.xyz/docs/faq/custom_repositories/)
+[![Tests](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/release.yml)
+[![HACS Validation](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/hacs.yml/badge.svg?branch=main)](https://github.com/Willyanlz/rss-labswill-ha/actions/workflows/hacs.yml)
+[![Original license: MIT](https://img.shields.io/badge/Original_license-MIT-green.svg)](docs/LICENSE-rss-news-card.txt)
+
 **Notícias no seu painel. Leitura no seu ritmo.**
 
 Carrossel RSS para Home Assistant, pensado para tablets e painéis de automação:
@@ -12,7 +18,8 @@ são de seu autor; a LabsWill mantém as adaptações do carrossel, controles e 
 
 ![Prévia do card](docs/preview.png)
 
-[Instalar pelo HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=Willyanlz&repository=rss-labswill-ha&category=plugin)
+[![Abrir este repositório no HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Willyanlz&repository=rss-labswill-ha&category=plugin)
+
  · [Versões](https://github.com/Willyanlz/rss-labswill-ha/releases)
  · [Changelog](CHANGELOG.md)
  · [Reportar problema](https://github.com/Willyanlz/rss-labswill-ha/issues)
@@ -40,36 +47,48 @@ o novo. Se o card original estiver instalado pelo HACS, remova-o também: os doi
 registram o mesmo componente. Guarde uma cópia do antigo antes de migrar.
 Recarregue completamente os navegadores dos painéis após a troca.
 
-### Sensores RSS
+### Criar o sensor no configuration.yaml
 
-O HACS instala o JavaScript; **não cria sensores nem instala o leitor Python**.
-Se você já tem sensores com o atributo `articles`, pode continuar usando-os.
+O HACS instala o card. Para buscar as notícias, configure o leitor e um sensor:
 
-Em uma instalação nova:
-
-1. Copie [scripts/fetch-rss.py](scripts/fetch-rss.py) para `/config/scripts/fetch-rss.py`.
-2. Cadastre seus feeds em `FEEDS` no leitor ou em `/config/rss-feeds.json`, conforme
-   o exemplo abaixo. O leitor é distribuído sem fontes predefinidas, com instruções PT-BR/EN.
-3. Mescle [examples/sensors.yaml](examples/sensors.yaml) no `configuration.yaml`,
-   usando o mesmo identificador de feed que você cadastrou.
-4. Verifique a configuração e reinicie o Home Assistant.
-5. Confirme os IDs reais dos sensores nas Ferramentas de desenvolvedor. Os IDs
-   podem ter sufixos se entidades com esses nomes já existirem.
-
-O leitor usa somente a biblioteca padrão do Python 3, disponível no HAOS.
-Para configurar outras fontes sem editar o leitor, crie `/config/rss-feeds.json`:
+1. Copie [fetch-rss.py](scripts/fetch-rss.py) para `/config/scripts/fetch-rss.py`.
+2. Cadastre seus feeds em `FEEDS` no script (há instruções PT-BR/EN) ou crie
+   `/config/rss-feeds.json`. O script vem sem fontes predefinidas. Exemplo:
 
 ```json
 {
-  "minha_fonte": "https://exemplo.com/feed.xml",
-  "outra_fonte": "https://example.com/rss.xml"
+  "g1_araraquara": "https://g1.globo.com/rss/g1/sp/sao-carlos-regiao/"
 }
 ```
 
-Use `python3 /config/scripts/fetch-rss.py minha_fonte` no sensor. Substitua os
-endereços ilustrativos acima pelos feeds desejados. O leitor suporta RSS XML
-com itens `item`, não Atom; retorna até 20 notícias por fonte. A atualidade
-das notícias depende do feed. Os portais podem mudar URLs ou bloquear requisições.
+3. Adicione ao `/config/configuration.yaml`:
+
+```yaml
+command_line:
+  - sensor:
+      name: Notícias G1 Araraquara e região
+      unique_id: noticias_g1_sao_carlos
+      icon: mdi:rss
+      scan_interval: 600
+      command: "python3 /config/scripts/fetch-rss.py g1_araraquara"
+      command_timeout: 60
+      value_template: "{{ value_json.articles | count }} artigos"
+      json_attributes:
+        - articles
+```
+
+Se já existe `command_line:`, adicione apenas o bloco `- sensor:` dentro dele,
+mantendo a indentação. Para outra fonte, troque o nome, `unique_id` e o identificador
+no fim do comando; esse identificador deve existir em `FEEDS` ou no JSON.
+
+4. Verifique a configuração e reinicie o Home Assistant.
+5. Em **Ferramentas de desenvolvedor → Estados**, procure o sensor e confirme
+   que existe o atributo `articles`. Copie o `entity_id` real para o card abaixo:
+   `unique_id` não define o `entity_id`, que pode variar se já houver uma entidade.
+
+O sensor consulta a fonte a cada 600 segundos. Se o portal demorar e ocorrer timeout,
+aumente `command_timeout` para 90. O leitor suporta RSS XML, com até 20 itens por fonte.
+[Documentação do sensor command_line](https://www.home-assistant.io/integrations/command_line/).
 
 ## Seu primeiro card
 
@@ -86,10 +105,8 @@ show_source: true
 show_date: true
 image_fit: contain
 sources:
-  - entity: sensor.noticias_minha_fonte
-    name: Minha Fonte
-  - entity: sensor.noticias_outra_fonte
-    name: Outra Fonte
+  - entity: sensor.noticias_g1_araraquara_e_regiao
+    name: G1 Araraquara e região
 ```
 
 O card ordena as notícias dentro de cada fonte, alterna as fontes e remove links
@@ -135,53 +152,11 @@ as políticas de cookies ou incorporação dos portais.
 | `title_font_size` / `desc_font_size` | `20` / `14` | Tamanho de texto em pixels. |
 | `card_title_color` / `article_title_color` / `desc_color` | tema HA | Cores opcionais. |
 
-## Atualizações nos clientes
+## Atualização
 
-Cada tag de versão dispara testes e publica uma **GitHub Release** com o card.
-O HACS consulta o repositório e disponibiliza a atualização no Home Assistant;
-essa detecção não é instantânea. Instale pela entidade de atualização do HACS.
+Atualize pelo HACS e recarregue o painel.
 
-Para instalação automática de madrugada, adapte
-[examples/auto-update.yaml](examples/auto-update.yaml) em cada cliente usando o
-**entity_id real** da atualização do RSS. A automação usa `update.install` somente
-quando há atualização disponível. Sem essa automação, a instalação é manual.
-
-Depois da instalação, recarregue o navegador/FreeKiosk para carregar o novo
-JavaScript. Abas abertas não passam a executar código novo automaticamente.
-O leitor Python e `/config/rss-feeds.json` ficam fora do ciclo de atualização HACS;
-mudanças nesses arquivos precisam ser aplicadas separadamente.
-
-Para voltar uma versão, use **Baixar novamente** no HACS, selecione uma release
-anterior e recarregue o painel. Desative a automação durante o rollback.
-
-Referências: [distribuição de cards no HACS](https://www.hacs.xyz/docs/publish/plugin/)
-e [entidades de atualização](https://www.hacs.xyz/docs/use/entities/update/).
-
-## Desenvolvimento e releases
-
-```sh
-npm ci
-npx playwright install chromium
-npm run build
-npm run check
-npm test
-```
-
-Edite `src/carousel.js` e `src/editor.js`; o bundle da raiz é gerado por
-`npm run build` e deve ser commitado. O QR e as traduções existentes estão em
-`src/preamble.js`, com os avisos de autoria preservados.
-
-Para publicar: atualize `package.json`, o texto da versão no editor e o changelog,
-gere o bundle, rode os testes, faça commit e envie uma tag correspondente:
-
-```sh
-git push origin main
-git tag v2.1.2
-git push origin v2.1.2
-```
-
-O workflow só publica se os testes passarem e a tag coincidir com `package.json`.
-Mantenha o repositório público e GitHub Actions habilitado.
+[Manutenção e desenvolvimento](docs/MAINTENANCE.md) · [Changelog](CHANGELOG.md)
 
 ## Créditos e limites de validação
 

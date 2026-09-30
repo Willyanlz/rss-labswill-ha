@@ -1,20 +1,13 @@
-# Mescle em configuration.yaml. Não crie duas chaves command_line no mesmo arquivo.
+# Exemplo: cadastre g1_araraquara em /config/rss-feeds.json antes de usar.
+# Mescle em configuration.yaml sem duplicar a chave command_line.
 command_line:
   - sensor:
-      name: Noticias Minha Fonte
-      unique_id: labswill_rss_minha_fonte
-      command: python3 /config/scripts/fetch-rss.py minha_fonte
-      command_timeout: 90
+      name: Notícias G1 Araraquara e região
+      unique_id: noticias_g1_sao_carlos
+      icon: mdi:rss
       scan_interval: 600
-      value_template: "{{ value_json.articles | length }}"
-      json_attributes:
-        - articles
-  - sensor:
-      name: Noticias Outra Fonte
-      unique_id: labswill_rss_outra_fonte
-      command: python3 /config/scripts/fetch-rss.py outra_fonte
-      command_timeout: 90
-      scan_interval: 600
-      value_template: "{{ value_json.articles | length }}"
+      command: "python3 /config/scripts/fetch-rss.py g1_araraquara"
+      command_timeout: 60
+      value_template: "{{ value_json.articles | count }} artigos"
       json_attributes:
         - articles

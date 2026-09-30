@@ -1,3 +1,4 @@
+# Confirme o entity_id real nas Ferramentas de desenvolvedor.
 type: custom:rss-news-card
 title: Notícias
 autoplay: true
@@ -10,7 +11,5 @@ show_source: true
 show_date: true
 image_fit: contain
 sources:
-  - entity: sensor.noticias_minha_fonte
-    name: Minha Fonte
-  - entity: sensor.noticias_outra_fonte
-    name: Outra Fonte
+  - entity: sensor.noticias_g1_araraquara_e_regiao
+    name: G1 Araraquara e região
